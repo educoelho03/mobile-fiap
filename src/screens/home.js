@@ -7,7 +7,7 @@ import { Camera, useCameraDevice, useCameraPermission, useMicrophonePermission }
 
 LogBox.ignoreLogs(["new NativeEventEmitter()"]);
 
-export default function Home() {
+export default function Home ({ navigation }) {
     const device = useCameraDevice("back");
     const [permission, setPermission] = useState(null);
     const cameraRef = useRef(null);
@@ -16,7 +16,7 @@ export default function Home() {
 
     const { hasPermission, requestPermission } = useCameraPermission();
     const { hasPermission: hasMicPermission, requestPermission: requestMicPermission } = useMicrophonePermission();
-
+    
     Tts.setDefaultLanguage('pt-BR'); 
     Tts.setDefaultRate(0.5); // Define a velocidade de fala
 
@@ -48,6 +48,7 @@ export default function Home() {
                     flash: 'off',
                 });
                 console.log(photo);
+                navigation.navigate('Results', { photoUri: photo.path });
             } catch (error) {
                 console.error('Erro ao tirar foto:', error);
             }
@@ -59,11 +60,14 @@ export default function Home() {
         const text = value ?? [''];
         const recognizedText = text.join(' ').replace(',', ' ');
         console.log('Resultados do Reconhecimento de Voz:', recognizedText);
-
+        
         if (recognizedText.toLowerCase().includes('abrir câmera')) {
             setShowCamera(true);
+        } else if (recognizedText.toLowerCase().includes('tirar foto')) {
+            capturePhoto();
         }
     }
+
 
     async function handleListening() {
         try {
@@ -161,12 +165,12 @@ const styles = StyleSheet.create({
         marginLeft: 10,
     },
     captureButton: {
-        backgroundColor: '#fff',  // Cor de fundo branca
-        width: 90,                // Largura do botão
-        height: 90,               // Altura do botão, igual à largura para garantir que seja redondo
-        borderRadius: 45,         // Metade da largura/altura para tornar o botão redondo
-        borderWidth: 8,           // Largura da borda
-        borderColor: '#A6A6A6',   // Cor da borda
+        backgroundColor: '#fff', 
+        width: 90,               
+        height: 90,              
+        borderRadius: 45,        
+        borderWidth: 8,          
+        borderColor: '#A6A6A6',  
         position: 'absolute',
         bottom: 70,
         alignSelf: 'center'

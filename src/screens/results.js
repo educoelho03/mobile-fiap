@@ -1,46 +1,32 @@
 import React from 'react';
-import { Image, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 
 export default function Results({ route }) {
-    const { photoUri } = route.params; // Obtenha a URI da foto passada como parâmetro
+    const { photoUri } = route.params;
 
     return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.resultsContainer}>
-                <Text style={styles.resultText}>
-                    Resultado da pesquisa:
-                </Text>
-            </View>
-            {photoUri && (
-                <Image
-                    source={{ uri: photoUri }}
-                    style={styles.productImage}
-                />
-            )}
-        </SafeAreaView>
+        <View style={styles.container}>
+            <Text style={styles.title}>Resultado da Foto</Text>
+            <Image source={{ uri: photoUri }} style={styles.image} />
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#000',
-        alignItems: 'center',
         justifyContent: 'center',
-        padding: 16,
+        alignItems: 'center',
+        backgroundColor: '#000',
     },
-    resultsContainer: {
-        marginBottom: 16,
-    },
-    resultText: {
+    title: {
         color: '#fff',
-        fontSize: 20,
-        fontWeight: 'bold',
+        fontSize: 24,
+        marginBottom: 20,
     },
-    productImage: {
-        width: 300,
-        height: 300,
-        borderRadius: 10,
-        resizeMode: 'cover',
+    image: {
+        width: '100%',
+        height: '100%',
+        resizeMode: 'contain',
     },
 });
