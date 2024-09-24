@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Image, StyleSheet, Text, View } from 'react-native';
 
 export default function Results({ route }) {
     const { photoUri } = route.params;
@@ -7,7 +7,16 @@ export default function Results({ route }) {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Resultado da Foto</Text>
-            <Image source={{ uri: photoUri }} style={styles.image} />
+            {photoUri ? (
+                <Image
+                    source={{ uri: photoUri }}
+                    style={styles.image}
+                    onError={() => console.log('Erro ao carregar a imagem')}
+                    resizeMode="contain"
+                />
+            ) : (
+                <ActivityIndicator size="large" color="#fff" />
+            )}
         </View>
     );
 }
@@ -26,7 +35,7 @@ const styles = StyleSheet.create({
     },
     image: {
         width: '100%',
-        height: '100%',
-        resizeMode: 'contain',
+        height: '80%', // Ajuste a altura conforme necessário
+        marginTop: 10,
     },
 });
