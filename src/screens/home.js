@@ -78,7 +78,7 @@ export default function Home ({ navigation }) {
     }
 
     // const beepSound = new Howl({
-    //     src: ['caminho/para/seu/beep.mp3'], // Insira o caminho para seu arquivo de som
+    //     src: ['colocar o caminho do beep.mp3'], 
     //     volume: 1.0, // Volume do som
     // });
 
