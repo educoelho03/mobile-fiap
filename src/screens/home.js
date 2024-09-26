@@ -24,6 +24,25 @@ export default function Home ({ navigation }) {
         Tts.speak("Olá, bem vindo ao SmartCam, Aperte no centro da tela para acessar a câmera.")
     }, [])
 
+
+    const checkPhoto = async (photoUrl) => {
+        try {
+            const response = await fetch("colocar aqui a URL", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ photoUri }),
+            })
+
+            const result = await response.json();
+            console.log("Verificação da foto: ", result)
+
+        } catch(error){
+            console.error("Erro ao fazer a requisição: ", error)
+        }
+    }
+
     useEffect(() => {
         (async () => {
             try {
@@ -41,39 +60,6 @@ export default function Home ({ navigation }) {
         })();
     }, [requestPermission, requestMicPermission]);
 
-    const capturePhoto = async () => {
-        if (cameraRef.current) {
-            try {
-                const photo = await cameraRef.current.takePhoto({
-                    flash: 'off',
-                });
-                console.log(photo);
-                Tts.speak("Foto tirada com sucesso."); 
-                navigation.navigate('Results', { photoUri: photo.path });
-            } catch (error) {
-                console.error('Erro ao tirar foto:', error);
-            }
-        }
-    };
-
-    function onSpeechResults(event) {
-        const { value } = event;
-        const text = value ?? [''];
-        const recognizedText = text.join(' ').replace(',', ' ');
-        console.log('Resultados do Reconhecimento de Voz:', recognizedText);
-        
-        if (recognizedText.toLowerCase().includes('abrir câmera')) {
-            setShowCamera(true);
-            Tts.speak("Você entrou na câmera, basta dizer 'tirar foto', para realizar uma captura.");
-            handleListening();
-        } else if (recognizedText.toLowerCase().includes('tirar foto')) {
-            handleListening();
-            capturePhoto();
-        } else {
-            Tts.speak("Comando não reconhecido.")
-        }
-    }
-
     async function handleListening() {
         try {
             if (isListening) {
@@ -89,6 +75,45 @@ export default function Home ({ navigation }) {
             console.log('Erro no reconhecimento de voz:', error);
         }
     }
+
+    const capturePhoto = async () => {
+        if (cameraRef.current) {
+            try {
+                const photo = await cameraRef.current.takePhoto({
+                    flash: 'off',
+                });
+                console.log(photo);
+                Tts.speak("Foto tirada com sucesso."); 
+
+                // CHAMA A FUNCAO DE CHECKAR A FOTO.
+                await checkPhoto(photo.path);
+
+                navigation.navigate('Results', { photoUri: photo.path });
+            } catch (error) {
+                console.error('Erro ao tirar foto:', error);
+            }
+        }
+    };
+
+    function onSpeechResults(event) {
+        const { value } = event;
+        const text = value ?? [''];
+        const recognizedText = text.join(' ').replace(',', ' ');
+        console.log('Resultados do Reconhecimento de Voz:', recognizedText);
+        
+        if (recognizedText.toLowerCase().includes('abrir câmera')) {
+            setShowCamera(true);
+            Tts.speak("Você entrou na câmera, preparando para tirar uma foto em 3 segundos.");
+            handleListening();
+            setTimeout(() => {
+                capturePhoto();
+            }, 3000)
+        } else {
+            Tts.speak("Comando não reconhecido.")
+        }
+    }
+
+
 
     useEffect(() => {
         Voice.onSpeechResults = onSpeechResults;
