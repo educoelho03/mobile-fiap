@@ -4,6 +4,7 @@ import { LogBox, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity } 
 import Tts from 'react-native-tts';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Camera, useCameraDevice, useCameraPermission, useMicrophonePermission } from 'react-native-vision-camera';
+import { Howl } from 'howler';
 
 LogBox.ignoreLogs(["new NativeEventEmitter()"]);
 
@@ -76,6 +77,11 @@ export default function Home ({ navigation }) {
         }
     }
 
+    // const beepSound = new Howl({
+    //     src: ['caminho/para/seu/beep.mp3'], // Insira o caminho para seu arquivo de som
+    //     volume: 1.0, // Volume do som
+    // });
+
     const capturePhoto = async () => {
         if (cameraRef.current) {
             try {
@@ -105,6 +111,18 @@ export default function Home ({ navigation }) {
             setShowCamera(true);
             Tts.speak("Você entrou na câmera, preparando para tirar uma foto em 3 segundos.");
             handleListening();
+
+            // let beepCounting = 0;
+            // const beepInterval = setInterval(() => {
+            //     beepSound.play();
+            //     beepCounting++;
+
+            //     if(beepCounting >= 3){
+            //         clearInterval(beepInterval)
+            //         capturePhoto();
+            //     }
+            // }, 1000)
+
             setTimeout(() => {
                 capturePhoto();
             }, 3000)
