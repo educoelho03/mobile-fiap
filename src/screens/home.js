@@ -4,7 +4,6 @@ import { LogBox, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity } 
 import Tts from 'react-native-tts';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Camera, useCameraDevice, useCameraPermission, useMicrophonePermission } from 'react-native-vision-camera';
-import { Howl } from 'howler';
 
 LogBox.ignoreLogs(["new NativeEventEmitter()"]);
 
@@ -19,30 +18,30 @@ export default function Home ({ navigation }) {
     const { hasPermission: hasMicPermission, requestPermission: requestMicPermission } = useMicrophonePermission();
     
     Tts.setDefaultLanguage('pt-BR'); 
-    Tts.setDefaultRate(0.5); // Define a velocidade de fala
+    Tts.setDefaultRate(0.5);
 
     useEffect(() => {
         Tts.speak("Olá, bem vindo ao SmartCam, Aperte no centro da tela para acessar a câmera.")
     }, [])
 
 
-    const checkPhoto = async (photoUrl) => {
-        try {
-            const response = await fetch("colocar aqui a URL", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ photoUri }),
-            })
+    // const checkPhoto = async (photoUrl) => {
+    //     try {
+    //         const response = await fetch("colocar aqui a URL", {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify({ photoUri }),
+    //         })
 
-            const result = await response.json();
-            console.log("Verificação da foto: ", result)
+    //         const result = await response.json();
+    //         console.log("Verificação da foto: ", result)
 
-        } catch(error){
-            console.error("Erro ao fazer a requisição: ", error)
-        }
-    }
+    //     } catch(error){
+    //         console.error("Erro ao fazer a requisição: ", error)
+    //     }
+    // }
 
     useEffect(() => {
         (async () => {
@@ -77,11 +76,6 @@ export default function Home ({ navigation }) {
         }
     }
 
-    // const beepSound = new Howl({
-    //     src: ['colocar o caminho do beep.mp3'], 
-    //     volume: 1.0, // Volume do som
-    // });
-
     const capturePhoto = async () => {
         if (cameraRef.current) {
             try {
@@ -91,7 +85,6 @@ export default function Home ({ navigation }) {
                 console.log(photo);
                 Tts.speak("Foto tirada com sucesso."); 
 
-                // CHAMA A FUNCAO DE CHECKAR A FOTO.
                 await checkPhoto(photo.path);
 
                 navigation.navigate('Results', { photoUri: photo.path });
@@ -107,21 +100,10 @@ export default function Home ({ navigation }) {
         const recognizedText = text.join(' ').replace(',', ' ');
         console.log('Resultados do Reconhecimento de Voz:', recognizedText);
         
-        if (recognizedText.toLowerCase().includes('abrir câmera')) {
+        if (recognizedText.toLowerCase().includes('tirar foto')) {
             setShowCamera(true);
             Tts.speak("Você entrou na câmera, preparando para tirar uma foto em 3 segundos.");
             handleListening();
-
-            // let beepCounting = 0;
-            // const beepInterval = setInterval(() => {
-            //     beepSound.play();
-            //     beepCounting++;
-
-            //     if(beepCounting >= 3){
-            //         clearInterval(beepInterval)
-            //         capturePhoto();
-            //     }
-            // }, 1000)
 
             setTimeout(() => {
                 capturePhoto();
@@ -149,14 +131,14 @@ export default function Home ({ navigation }) {
                 <Text style={styles.welcomeText}>
                     Bem-vindo ao SmartCam
                 </Text>
-
+                
                 <TouchableOpacity 
-                    style={styles.voiceButton} 
+                    style={[styles.voiceButton, { backgroundColor: isListening ? '#EE2B47' : '#34374C' }]} 
                     accessibilityLabel="Iniciar comando de voz"
                     accessibilityHint="Toque para começar a usar comandos de voz"
                     onPress={handleListening}
                 >
-                    <Icon name="mic" size={30} color="#fff" />
+                    <Icon name="mic" size={40} color="#fff" />
                     <Text style={styles.buttonText}>
                         {isListening ? "Gravando..." : "Iniciar reconhecimento de voz"}
                     </Text>
@@ -187,7 +169,7 @@ export default function Home ({ navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#000',
+        backgroundColor: '#2C2E3E',
     },
     scrollViewContent: {
         flexGrow: 1,
@@ -195,25 +177,31 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     welcomeText: {
-        color: '#fff',
+        color: '#F6F6F6',
         fontSize: 20,
+        marginTop: 50,
         marginBottom: 20,
     },
     voiceButton: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#ff5722',
-        paddingVertical: 15,
+        justifyContent: 'center', 
+        paddingVertical: 20, 
         paddingHorizontal: 30,
-        borderRadius: 50,
+        borderRadius: 10, 
+        width: '90%', 
+        height: '80%', 
+        marginTop: 20, 
+        borderWidth: 1, 
+        borderColor: '#F6F6F6', 
     },
     buttonText: {
-        color: '#fff',
+        color: '#F6F6F6',
         fontSize: 16,
         marginLeft: 10,
     },
     captureButton: {
-        backgroundColor: '#fff', 
+        backgroundColor: '#F6F6F6', 
         width: 90,               
         height: 90,              
         borderRadius: 45,        
